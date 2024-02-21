@@ -9,9 +9,12 @@ public class CellData : MonoBehaviour
     public bool first;
     public int cellVal = 0;
 
-    public bool reveal;
+    public Vector3Int pos;
+
+    public bool revealed;
     public static int selectedAmount;
     public bool flag;
+    public bool exploded;
 
     public Transform bombred;
     // Start is called before the first frame update
@@ -26,4 +29,5 @@ public class CellData : MonoBehaviour
     {
 
     }
+
 }

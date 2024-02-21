@@ -25,7 +25,7 @@ public class Minesweeper : MonoBehaviour
 
     //private void UIManager_OnChangeSize OnDisable()
     //{
-    GameObject[,] v = new GameObject[9, 9];
+    GameObject[,] v = new GameObject[row, col];
 
 
     // Start is called before the first frame update
@@ -43,6 +43,7 @@ public class Minesweeper : MonoBehaviour
 
                 go.transform.GetComponent<Renderer>().material = cellMaterial;
                 go.transform.AddComponent<CellData>().cellVal = 0;
+                go.transform.AddComponent<CellData>().pos = new Vector3Int(i, 0, j);
                 //var cd = go.transform.AddComponent<CellData>();
 
                 v[i, j] = go;
@@ -64,22 +65,17 @@ public class Minesweeper : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonUp(0))
         {
             if (Physics.Raycast(ray, out tmphitHighlight, 100))
             {
                 Debug.Log($"We got a hit {tmphitHighlight.transform.name}," +
-                    $" Bomb status: {tmphitHighlight.transform.GetComponent<CellData>().isBomb}");// +$"Cell Value: {tmphitHighlight.transform.GetComponent<Minesweeper>().cellNum}");
-
-
-                // check the game object and see if it is a bomb
-                // if it is the first click and it is a bomb, ignore it
-
-
+                    $" Bomb status: {tmphitHighlight.transform.GetComponent<CellData>().isBomb}");
             }
         }
 
-        if (selAm == 0 && Input.GetMouseButtonUp(0)) //WORKS | RECURSIVELY REVEALING, AND NUMBERING
+        // PSEUDO RANDOM BOMB PLACEMENT ON FIRST CLICK + FIRST CLICK CANNOT BE BOMB
+        if (selAm == 0 && Input.GetMouseButtonUp(0))
         {
             selAm = 1;
             int chance = Random.Range(50, 70);
@@ -95,13 +91,12 @@ public class Minesweeper : MonoBehaviour
                 {
                     for (int j = 0; j < col; j++)
                     {
-                        var go = v[i, j]; //GameObject.Find($"[{i},{j}]");
+                        var go = v[i, j];
                         var cd = go.transform.GetComponent<CellData>();
                         if (Random.Range(1, 100) > chance && bombCount != 0 && !cd.first)
                         {
                             cd.isBomb = true;
                             cd.cellVal = -1;
-                            //v[i, j] = cd;
                             chance += 20;
                             bombCount--;
                             go.transform.GetComponent<Renderer>().material.color = Color.red;
@@ -129,43 +124,34 @@ public class Minesweeper : MonoBehaviour
                             break;
                     }
 
+                }
 
-
-                }//END OF MINE PLACEMENT AFTER FIRST CLICK
-
+                // CHECKS ADJACENT CELLS FOR NUMBERING CELLS
                 for (int i = 0; i < row; i++)
                 {
                     for (int j = 0; j < col; j++)
                     {
-                        //int[] adjI = { i - 1, i, i + 1, i - 1, i + 1, i - 1, i, i + 1 };
-                        //int[] adjJ = { j - 1, j - 1, j - 1, j, j, j + 1, j + 1, j + 1 };
-
-                        var go = v[i, j];// GameObject.Find($"[{i},{j}]");                 // current cell
-                        //var M = go.transform.AddComponent<Minesweeper>();       // current cell data for cellNum (# of adj bombs)
-                        var cd = go.transform.GetComponent<CellData>();         // current cell data for isBomb
+                        var go = v[i, j];
+                        var cd = go.transform.GetComponent<CellData>();
 
                         int[,] adj = { { i - 1, j - 1 }, { i, j - 1 }, { i + 1, j - 1 }, { i - 1, j }, { i + 1, j }, { i - 1, j + 1 }, { i, j + 1 }, { i + 1, j + 1 } };
 
-                        Debug.Log(adj.GetLength(0));
+                        //Debug.Log(adj.GetLength(0));
                         if (cd.isBomb)
                         {
 
                             for (int k = 0; k < adj.GetLength(0); k++)
                             {
-                                //var findAdj = GameObject.Find($"[{adjI[k]},{adjJ[k]}]");
-                                //var cdFindAdj = findAdj.transform.AddComponent<CellData>();
-
                                 int m = adj[k, 0];
                                 int n = adj[k, 1];
-                                Debug.Log($"{m},{n}");
+                                //Debug.Log($"{m},{n}");
 
-
-                                if (m >= 0 && n >= 0 && m < row && n < col && !(m == i && n == j) && !v[m, n].transform.GetComponent<CellData>().isBomb) //GameObject.Find($"[{adjI[k]},{adjJ[k]}]") == null)
+                                if (m >= 0 && n >= 0 && m < row && n < col && !(m == i && n == j) && !v[m, n].transform.GetComponent<CellData>().isBomb)
                                 {
                                     var M = v[m, n];
                                     M.transform.GetComponent<CellData>().cellVal++;
                                     v[m, n] = M;
-                                    Debug.Log($"Cell: {v[m, n]}, Cell value: {v[m, n].transform.GetComponent<CellData>().cellVal}");
+                                    //Debug.Log($"Cell: {v[m, n]}, Cell value: {v[m, n].transform.GetComponent<CellData>().cellVal}");
                                 }
 
                             }
@@ -183,13 +169,37 @@ public class Minesweeper : MonoBehaviour
                     }
                 }
             }
-
-
-
-
-
         }// END OF FIRST CLICK
 
+        if (selAm != 0 && Input.GetMouseButtonUp(0))
+        {
 
+        }
+
+    }
+
+    //GameObject GetCell()
+    //{
+    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+    //    if (Physics.Raycast(ray, out tmphitHighlight, 100))
+    //    {
+    //        GameObject clicked = tmphitHighlight.collider.gameObject;
+    //        int r = clicked.
+    //        return tmphitHighlight.transform.GetComponent<Minesweeper>().v[row, col];
+    //    }
+
+    //    return null;
+    //}
+
+    void Reveal(Vector3 p)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out tmphitHighlight, 100))
+        {
+            //i = tmphitHighlight.transform.GetComponent<Minesweeper>().v[p];
+            //var go = v[i, j];
+        }
     }
 }
