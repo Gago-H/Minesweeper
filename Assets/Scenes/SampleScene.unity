@@ -156,8 +156,10 @@ MonoBehaviour:
   isBomb: 0
   first: 0
   cellVal: 0
-  reveal: 0
+  pos: {x: 0, y: 0, z: 0}
+  revealed: 0
   flag: 0
+  exploded: 0
   bombred: {fileID: 0}
 --- !u!114 &36377813
 MonoBehaviour:

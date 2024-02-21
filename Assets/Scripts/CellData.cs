@@ -9,11 +9,11 @@ public class CellData : MonoBehaviour
     public bool first;
     public int cellVal = 0;
 
-    public Vector3Int pos;
+    public Vector2Int pos;
 
     public bool revealed;
     public static int selectedAmount;
-    public bool flag;
+    public bool flagged;
     public bool exploded;
 
     public Transform bombred;

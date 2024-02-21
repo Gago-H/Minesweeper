@@ -43,7 +43,7 @@ public class Minesweeper : MonoBehaviour
 
                 go.transform.GetComponent<Renderer>().material = cellMaterial;
                 go.transform.AddComponent<CellData>().cellVal = 0;
-                go.transform.AddComponent<CellData>().pos = new Vector3Int(i, 0, j);
+                go.transform.AddComponent<CellData>().pos = new Vector2Int(i, j);
                 //var cd = go.transform.AddComponent<CellData>();
 
                 v[i, j] = go;
@@ -192,14 +192,43 @@ public class Minesweeper : MonoBehaviour
     //    return null;
     //}
 
-    void Reveal(Vector3 p)
+    void RevealRec(int x, int y)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out tmphitHighlight, 100))
+        if (x < 0 || x >= row || y < 0 || y >= col || v[x, y].GetComponent<CellData>().revealed)
         {
-            //i = tmphitHighlight.transform.GetComponent<Minesweeper>().v[p];
-            //var go = v[i, j];
+            return; // Base case: cell out of bounds or already revealed
         }
+
+        if (v[x, y].GetComponent<CellData>().isBomb || v[x, y].GetComponent<CellData>().flagged)
+        {
+            return; // Base case: cell is bomb or flagged
+        }
+
+        v[x, y].GetComponent<CellData>().revealed = true;
+
+        // Change color of the revealed cell
+        var go = v[x, y];
+        go.transform.GetComponent<Renderer>().material.color = Color.gray;
+
+        if (v[x, y].GetComponent<CellData>().cellVal == 0)
+        {
+            // If the current cell has a value of 0, recursively reveal its neighbors
+            RevealRec(x - 1, y - 1); // BL
+            RevealRec(x - 1, y);     // ML
+            RevealRec(x - 1, y + 1); // TL
+            RevealRec(x, y - 1);     // BM
+            RevealRec(x, y + 1);     // TM
+            RevealRec(x + 1, y - 1); // BR
+            RevealRec(x + 1, y);     // MR
+            RevealRec(x + 1, y + 1); // TR
+        }
+    }
+
+    void Reveal()
+    {
+
+        //var go = v[]
+        //go.transform.GetComponent<Renderer>().material.color = Color.red;
+
     }
 }
