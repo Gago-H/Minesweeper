@@ -43,7 +43,15 @@ public class Minesweeper : MonoBehaviour
 
                 go.transform.GetComponent<Renderer>().material = cellMaterial;
                 go.transform.AddComponent<CellData>().cellVal = 0;
-                go.transform.AddComponent<CellData>().pos = new Vector2Int(i, j);
+                go.transform.GetComponent<CellData>().pos = new Vector2Int(i, j);
+                go.transform.GetComponent<CellData>().revealed = false;
+                go.transform.GetComponent<CellData>().flagged = false;
+                go.transform.GetComponent<CellData>().exploded = false;
+
+                //var txt = go.transform.GetComponent<CellData>().tmpCellValue;
+                //txt.transform.gameObject.SetActive(false);
+                //txt.text = "0";
+
                 //var cd = go.transform.AddComponent<CellData>();
 
                 v[i, j] = go;
@@ -173,24 +181,22 @@ public class Minesweeper : MonoBehaviour
 
         if (selAm != 0 && Input.GetMouseButtonUp(0))
         {
+            if (Physics.Raycast(ray, out tmphitHighlight, 100))
+            {
+                int x = tmphitHighlight.transform.GetComponent<CellData>().pos.x;
+                int y = tmphitHighlight.transform.GetComponent<CellData>().pos.y;
 
+                Debug.Log($"pos: {x},{y}");
+
+                var cd = v[x, y].transform.GetComponent<CellData>();
+                //Debug.Log(cd);
+                //cd.tmpCellValue.text = $"{cd.cellVal}";
+
+                RevealRec(x, y);
+            }
         }
 
     }
-
-    //GameObject GetCell()
-    //{
-    //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-    //    if (Physics.Raycast(ray, out tmphitHighlight, 100))
-    //    {
-    //        GameObject clicked = tmphitHighlight.collider.gameObject;
-    //        int r = clicked.
-    //        return tmphitHighlight.transform.GetComponent<Minesweeper>().v[row, col];
-    //    }
-
-    //    return null;
-    //}
 
     void RevealRec(int x, int y)
     {
@@ -224,11 +230,12 @@ public class Minesweeper : MonoBehaviour
         }
     }
 
-    void Reveal()
+    void Reveal(int x, int y)
     {
+        //if (!v[x, y].transform.GetComponent<CellData>().revealed)
+        //{
 
-        //var go = v[]
-        //go.transform.GetComponent<Renderer>().material.color = Color.red;
-
+        //}
+        //if (!v[x, y].transform.GetComponent<CellData>().flagged)
     }
 }

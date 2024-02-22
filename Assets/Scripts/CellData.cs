@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public class CellData : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class CellData : MonoBehaviour
     public static int selectedAmount;
     public bool flagged;
     public bool exploded;
+
+    public TMP_Text tmpCellValue;
 
     public Transform bombred;
     // Start is called before the first frame update
