@@ -156,10 +156,11 @@ MonoBehaviour:
   isBomb: 0
   first: 0
   cellVal: 0
-  pos: {x: 0, y: 0, z: 0}
+  pos: {x: 0, y: 0}
   revealed: 0
-  flag: 0
+  flagged: 0
   exploded: 0
+  tmpCellValue: {fileID: 0}
   bombred: {fileID: 0}
 --- !u!114 &36377813
 MonoBehaviour:
@@ -174,6 +175,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellMaterial: {fileID: 2100000, guid: 37e3f76e179f5a94e9206b61bb78b4cf, type: 2}
+  tile1: {fileID: 2100000, guid: 16993a75bff751945ac8ebfb642786f5, type: 2}
+  tile2: {fileID: 0}
+  tile3: {fileID: 0}
+  tile4: {fileID: 0}
+  tile5: {fileID: 0}
+  tile6: {fileID: 0}
+  tile7: {fileID: 0}
+  tile8: {fileID: 0}
   selAm: 0
   cellNum: 0
 --- !u!4 &36377814
@@ -219,8 +228,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 0.45
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

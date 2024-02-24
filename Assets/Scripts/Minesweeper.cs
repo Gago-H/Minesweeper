@@ -6,6 +6,16 @@ public class Minesweeper : MonoBehaviour
 {
     public Material cellMaterial;
 
+    public Material tile1;
+    public Material tile2;
+    public Material tile3;
+    public Material tile4;
+    public Material tile5;
+    public Material tile6;
+    public Material tile7;
+    public Material tile8;
+
+
     public static int row = 9;
     public static int col = 9;
 
@@ -39,6 +49,7 @@ public class Minesweeper : MonoBehaviour
                 var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 go.transform.position = new Vector3(i, 0, j);
                 go.transform.localScale = new Vector3(1, 0.1f, 1);
+                go.transform.Rotate(Vector3.up, 180);
                 go.transform.name = $"[{i},{j}]";
 
                 go.transform.GetComponent<Renderer>().material = cellMaterial;
@@ -107,7 +118,7 @@ public class Minesweeper : MonoBehaviour
                             cd.cellVal = -1;
                             chance += 20;
                             bombCount--;
-                            go.transform.GetComponent<Renderer>().material.color = Color.red;
+                            //go.transform.GetComponent<Renderer>().material.color = Color.red;
                             Debug.Log($"We set a bomb {go.transform.name}, Cell value: {cd.cellVal}");
                         }
                         else
@@ -193,6 +204,48 @@ public class Minesweeper : MonoBehaviour
                 //cd.tmpCellValue.text = $"{cd.cellVal}";
 
                 RevealRec(x, y);
+
+                if (cd.isBomb)
+                {
+                    v[x, y].transform.GetComponent<Renderer>().material.color = Color.red;
+                    //exploded = true
+
+                    for (int i = 0; i < row; i++)
+                    {
+                        for (int j = 0; j < col; j++)
+                        {
+                            if(v[i, j].transform.GetComponent<CellData>().isBomb && v[i, j] != v[x, y])
+                            {
+                                v[i,j].transform.GetComponent<Renderer>().material.color = Color.gray;
+                                //display bomb | set activate
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (selAm != 0 && Input.GetMouseButtonUp(1))
+        {
+            if (Physics.Raycast(ray, out tmphitHighlight, 100))
+            {
+                int x = tmphitHighlight.transform.GetComponent<CellData>().pos.x;
+                int y = tmphitHighlight.transform.GetComponent<CellData>().pos.y;
+
+                Debug.Log($"pos: {x},{y}");
+
+                var cd = v[x, y].transform.GetComponent<CellData>();
+                
+                if (!cd.flagged)
+                {
+                    cd.flagged = true;
+                    //set flag sprite active
+                }
+                else if (cd.flagged)
+                {
+                    cd.flagged = false;
+                    //deactivate flag sprite
+                }
             }
         }
 
@@ -211,6 +264,7 @@ public class Minesweeper : MonoBehaviour
         }
 
         v[x, y].GetComponent<CellData>().revealed = true;
+        Reveal(x, y);
 
         // Change color of the revealed cell
         var go = v[x, y];
@@ -232,10 +286,41 @@ public class Minesweeper : MonoBehaviour
 
     void Reveal(int x, int y)
     {
-        //if (!v[x, y].transform.GetComponent<CellData>().revealed)
-        //{
+        var cv = v[x,y].transform.GetComponent<CellData>();
 
-        //}
-        //if (!v[x, y].transform.GetComponent<CellData>().flagged)
+        switch (cv.cellVal)
+        {
+            case 1:
+                cv.GetComponent<Renderer>().material = tile1;
+                break;
+
+            case 2:
+                cv.GetComponent<Renderer>().material = tile2;
+                break;
+
+            case 3:
+                cv.GetComponent<Renderer>().material = tile3;
+                break;
+
+            case 4:
+                cv.GetComponent<Renderer>().material = tile4;
+                break;
+
+            case 5:
+                cv.GetComponent<Renderer>().material = tile5;
+                break;
+
+            case 6:
+                cv.GetComponent<Renderer>().material = tile6;
+                break;
+
+            case 7:
+                cv.GetComponent<Renderer>().material = tile7;
+                break;
+
+            case 8:
+                cv.GetComponent<Renderer>().material = tile8;
+                break;
+        }
     }
 }
