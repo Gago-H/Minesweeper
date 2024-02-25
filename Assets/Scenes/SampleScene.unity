@@ -176,13 +176,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellMaterial: {fileID: 2100000, guid: 37e3f76e179f5a94e9206b61bb78b4cf, type: 2}
   tile1: {fileID: 2100000, guid: 16993a75bff751945ac8ebfb642786f5, type: 2}
-  tile2: {fileID: 0}
-  tile3: {fileID: 0}
-  tile4: {fileID: 0}
-  tile5: {fileID: 0}
-  tile6: {fileID: 0}
-  tile7: {fileID: 0}
-  tile8: {fileID: 0}
+  tile2: {fileID: 2100000, guid: b065e68577f9ea34fba6e191a3ed2eed, type: 2}
+  tile3: {fileID: 2100000, guid: cd5c313bc4752274ea284f0187ca8951, type: 2}
+  tile4: {fileID: 2100000, guid: f0c35084fc70d1a4c90bb9d3582a56d3, type: 2}
+  tile5: {fileID: 2100000, guid: 861c557fb2ea5514c8cab9936d47adb7, type: 2}
+  tile6: {fileID: 2100000, guid: 236b6a1263af92246abe7de21f28c169, type: 2}
+  tile7: {fileID: 2100000, guid: e97de6cbc354a8d4e87948596fde5931, type: 2}
+  tile8: {fileID: 2100000, guid: 7682565c1735bbb429427cfd009adc35, type: 2}
   selAm: 0
   cellNum: 0
 --- !u!4 &36377814
