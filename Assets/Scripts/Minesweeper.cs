@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+
 public class Minesweeper : MonoBehaviour
 {
     public Material cellMaterial;
@@ -19,63 +21,52 @@ public class Minesweeper : MonoBehaviour
     public Material MineExploded;
     public Material Flag;
 
+    GameObject[,] v;
 
-    public static int row = 9;
-    public static int col = 9;
+    public static int row;
+    public static int col;
 
     public bool lost = false;
     public bool won = false;
 
-    public int selAm = CellData.selectedAmount;
-
     static int count = row * col;
-    static int bombCount = count * 15 / 100;
+    static int bombCount;
     int nonBombCount = count - bombCount;
+
+    public int selAm = CellData.selectedAmount;
 
     public int cellNum = 0;
 
+    private void OnEnable()
+    {
+        UIManager.OnChangeGridSize += UIManager_OnChangeGridSize;
+    }
+
+    private void UIManager_OnChangeGridSize(int m, int n, int bc)
+    {
+        //row = m;
+        //col = n;
+        bombCount = bc;
+        v = new GameObject[m, n];
+        CreateBoard(m, n);
+        PlaceBomb(bc);
+    }
+
+    private void OnDisable()
+    {
+        UIManager.OnChangeGridSize -= UIManager_OnChangeGridSize;
+    }
+
     RaycastHit tmphitHighlight;
 
-    //private void OnEnable()
-    //{
-    //   UIManager.OnChangeSize += UIManager_OnchangeSize;
-    //}
-
-    //private void UIManager_OnChangeSize OnDisable()
-    //{
-    GameObject[,] v = new GameObject[row, col];
+    
 
 
     // Start is called before the first frame update
     void Start()
     {
-
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < col; j++)
-            {
-                var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                go.transform.position = new Vector3(i, 0, j);
-                go.transform.localScale = new Vector3(1, 0.1f, 1);
-                go.transform.Rotate(Vector3.up, 180);
-                go.transform.name = $"[{i},{j}]";
-
-                go.transform.GetComponent<Renderer>().material = cellMaterial;
-                go.transform.AddComponent<CellData>().cellVal = 0;
-                go.transform.GetComponent<CellData>().pos = new Vector2Int(i, j);
-                go.transform.GetComponent<CellData>().revealed = false;
-                go.transform.GetComponent<CellData>().flagged = false;
-                go.transform.GetComponent<CellData>().exploded = false;
-                go.transform.GetComponent<CellData>().notHere = false;
-                //go.transform.GetComponent<CellData>().isBomb = false;
-
-                v[i, j] = go;
-            }
-        }
-
-        PlaceBomb();// PSEUDO RANDOMLY PLACES BOMBS
-
-        //PlaceCellValues();// CHECKS ADJACENT CELLS FOR NUMBERING CELLS
+        //CreateBoard(row, col);
+        //PlaceBomb(bombCount);
     }
 
 
@@ -92,7 +83,7 @@ public class Minesweeper : MonoBehaviour
                     $" Bomb status: {tmphitHighlight.transform.GetComponent<CellData>().isBomb}");
             }
         }
-        
+
         // PSEUDO RANDOM BOMB PLACEMENT ON FIRST CLICK + FIRST CLICK CANNOT BE BOMB
         if (selAm == 0 && Input.GetMouseButtonUp(0))
         {
@@ -103,7 +94,7 @@ public class Minesweeper : MonoBehaviour
 
                 //v[x, y].transform.GetComponent<CellData>().first = true;
                 
-                ReplaceBombs(x, y);
+                ReplaceBombs(x, y, bombCount);
                 PlaceCellValues();
 
                 // Recursively reveal an opening area upon first click then change the value,
@@ -295,25 +286,51 @@ public class Minesweeper : MonoBehaviour
         nonBombCount--;
     }
 
-    void PlaceBomb()
+    void CreateBoard(int r, int c)
+    {
+        Debug.Log($"{r},{c}");
+        for (int i = 0; i < r; i++)
+        {
+            for (int j = 0; j < c; j++)
+            {
+                var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                go.transform.position = new Vector3(i, 0, j);
+                go.transform.localScale = new Vector3(1, 0.1f, 1);
+                go.transform.Rotate(Vector3.up, 180);
+                go.transform.name = $"[{i},{j}]";
+
+                go.transform.GetComponent<Renderer>().material = cellMaterial;
+                go.transform.AddComponent<CellData>().cellVal = 0;
+                go.transform.GetComponent<CellData>().pos = new Vector2Int(i, j);
+                go.transform.GetComponent<CellData>().revealed = false;
+                go.transform.GetComponent<CellData>().flagged = false;
+                go.transform.GetComponent<CellData>().exploded = false;
+                go.transform.GetComponent<CellData>().notHere = false;
+                //go.transform.GetComponent<CellData>().isBomb = false;
+
+                v[i, j] = go;
+            }
+        }
+    }
+    void PlaceBomb(int bc)
     {
         int chance = Random.Range(50, 70);
         bool sideSwap = true;
         int start = 0, end = row - 1, side = 0;
 
 
-        for (int i = start; bombCount != 0; i = side)
+        for (int i = start; bc != 0; i = side)
         {
             for (int j = 0; j < col; j++)
             {
                 var go = v[i, j];
                 var cd = go.transform.GetComponent<CellData>();
-                if (Random.Range(1, 100) > chance && bombCount != 0 && !cd.isBomb && !cd.notHere)//!cd.revealed && !cd.isBomb && cd.first)
+                if (Random.Range(1, 100) > chance && bc != 0 && !cd.isBomb && !cd.notHere)//!cd.revealed && !cd.isBomb && cd.first)
                 {
                     cd.isBomb = true;
                     cd.cellVal = -1;
                     chance += 20;
-                    bombCount--;
+                    bc--;
                     //go.transform.GetComponent<Renderer>().material.color = Color.cyan;
                     Debug.Log($"We set a bomb {go.transform.name}, Cell value: {cd.cellVal}");
                 }
@@ -374,7 +391,7 @@ public class Minesweeper : MonoBehaviour
         }
     }
 
-    void ReplaceBombs(int x, int y)
+    void ReplaceBombs(int x, int y, int bc)
     {
         v[x, y].GetComponent<CellData>().cellVal = 0;
         v[x, y].GetComponent<CellData>().notHere = true;
@@ -388,7 +405,7 @@ public class Minesweeper : MonoBehaviour
                 {
                     if (v[i, j].GetComponent<CellData>().isBomb)
                     {
-                        bombCount++;
+                        bc++;
                         v[i, j].GetComponent<CellData>().isBomb = false;
                         v[i, j].GetComponent<CellData>().cellVal = 0;
                         Debug.Log($"I took out a bomb!");
@@ -406,6 +423,6 @@ public class Minesweeper : MonoBehaviour
             }
         }
 
-        PlaceBomb();
+        PlaceBomb(bc);
     }
 }
