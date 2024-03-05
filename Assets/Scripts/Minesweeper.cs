@@ -28,13 +28,14 @@ public class Minesweeper : MonoBehaviour
 
     public bool lost = false;
     public bool won = false;
+    public bool GameStart = false;
 
-    static int count = row * col;
+    static int count;
     static int bombCount;
-    int nonBombCount = count - bombCount;
+    int nonBombCount;
 
     public int selAm = CellData.selectedAmount;
-
+    public int notHereCount = 0;
     public int cellNum = 0;
 
     private void OnEnable()
@@ -44,11 +45,14 @@ public class Minesweeper : MonoBehaviour
 
     private void UIManager_OnChangeGridSize(int m, int n, int bc)
     {
-        //row = m;
-        //col = n;
+        row = m;
+        col = n;
+        count = row * col;
         bombCount = bc;
+        nonBombCount = count - bombCount;
         v = new GameObject[m, n];
         CreateBoard(m, n);
+        Debug.Log($"{bombCount}");
         PlaceBomb(bc);
     }
 
@@ -59,7 +63,7 @@ public class Minesweeper : MonoBehaviour
 
     RaycastHit tmphitHighlight;
 
-    
+   
 
 
     // Start is called before the first frame update
@@ -73,6 +77,8 @@ public class Minesweeper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!GameStart) return;
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Input.GetMouseButtonUp(0))
@@ -314,44 +320,33 @@ public class Minesweeper : MonoBehaviour
     }
     void PlaceBomb(int bc)
     {
-        int chance = Random.Range(50, 70);
-        bool sideSwap = true;
-        int start = 0, end = row - 1, side = 0;
+        bombCount = bc;
 
+        Debug.Log($"{bombCount}");
 
-        for (int i = start; bc != 0; i = side)
+        while (bombCount > 0)
         {
-            for (int j = 0; j < col; j++)
+            int x = Random.Range(0, row - 1);
+            int y = Random.Range(0, col - 1);
+            var b = v[x, y];
+            var bd = v[x, y].GetComponent<CellData>();
+            if (!bd.isBomb && !bd.notHere && bombCount > 0)
             {
-                var go = v[i, j];
-                var cd = go.transform.GetComponent<CellData>();
-                if (Random.Range(1, 100) > chance && bc != 0 && !cd.isBomb && !cd.notHere)//!cd.revealed && !cd.isBomb && cd.first)
-                {
-                    cd.isBomb = true;
-                    cd.cellVal = -1;
-                    chance += 20;
-                    bc--;
-                    //go.transform.GetComponent<Renderer>().material.color = Color.cyan;
-                    Debug.Log($"We set a bomb {go.transform.name}, Cell value: {cd.cellVal}");
-                }
+                bd.isBomb = true;
+                bd.cellVal = -1;
+                bombCount--;
+                Debug.Log($"We set a bomb {b.transform.name}, Cell value: {bd.cellVal}");
             }
-            chance = Random.Range(50, 70);
-
-            switch (sideSwap)
-            {
-                case true:
-                    sideSwap = false;
-                    start++;
-                    side = end;
-                    break;
-                case false:
-                    sideSwap = true;
-                    end--;
-                    side = start;
-                    break;
-            }
-
+            //else if (!bd.isBomb && notHereCount == bombCount && bd.notHere)
+            //{
+            //    bd.isBomb = true;
+            //    bd.cellVal = -1;
+            //    bombCount--;
+            //    notHereCount--;
+            //    Debug.Log($"We set a bomb {b.transform.name}, Cell value: {bd.cellVal}");
+            //}
         }
+        GameStart = true;
     }
 
     void PlaceCellValues()
@@ -396,6 +391,7 @@ public class Minesweeper : MonoBehaviour
         v[x, y].GetComponent<CellData>().cellVal = 0;
         v[x, y].GetComponent<CellData>().notHere = true;
         v[x, y].GetComponent<CellData>().isBomb = false;
+        notHereCount++;
 
         for (int i = x - 1; i <= x + 1; i++)
         {
@@ -412,13 +408,7 @@ public class Minesweeper : MonoBehaviour
                     }
 
                     v[i, j].GetComponent<CellData>().notHere = true;
-                    
-                    //Reveal(i, j);
-                    //if (v[i, j].GetComponent<CellData>().cellVal == 0)
-                    //{
-                    //    RevealRec(i, j);
-                    //}
-                    //RevealRec(i, j);
+                    notHereCount++;
                 }
             }
         }
