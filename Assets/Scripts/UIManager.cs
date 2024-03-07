@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using static Minesweeper;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class UIManager : MonoBehaviour
     public static event ChangeGridSize OnChangeGridSize;
 
     public GameObject UI;
+    public GameObject resetButton;
     public new Camera camera;
 
     private void Hide()
@@ -29,16 +31,19 @@ public class UIManager : MonoBehaviour
                 OnChangeGridSize?.Invoke(9, 9, 10);
                 Hide();
                 AdjustCameraView(9, 9);
+                resetButton.SetActive(true);
                 break;
             case 1:
                 OnChangeGridSize?.Invoke(16, 16, 40);
                 Hide();
                 AdjustCameraView(16, 16);
+                resetButton.SetActive(true);
                 break;
             case 2:
                 OnChangeGridSize?.Invoke(30, 16, 99);
                 Hide();
                 AdjustCameraView(16, 30);
+                resetButton.SetActive(true);
                 break;
             case 3:
                 int d = string.IsNullOrEmpty(userInput.text) ? 9 : Convert.ToInt32(userInput.text);
@@ -48,6 +53,11 @@ public class UIManager : MonoBehaviour
                 OnChangeGridSize?.Invoke(d2, d, mc);
                 Hide();
                 AdjustCameraView(d, d2);
+                resetButton.SetActive(true);
+                break;
+            case 4:
+                resetButton.SetActive(false);
+                UI.SetActive(true);
                 break;
         }
 

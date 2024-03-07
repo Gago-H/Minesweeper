@@ -8,6 +8,9 @@ public class Minesweeper : MonoBehaviour
 {
     public Material cellMaterial;
 
+    public GameObject canvas;
+    public GameObject reset;
+
     public Material tile1;
     public Material tile2;
     public Material tile3;
@@ -69,8 +72,7 @@ public class Minesweeper : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //CreateBoard(row, col);
-        //PlaceBomb(bombCount);
+        reset.SetActive(false);
     }
 
 
@@ -78,6 +80,7 @@ public class Minesweeper : MonoBehaviour
     void Update()
     {
         if (!GameStart) return;
+        if (won) return;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -201,15 +204,36 @@ public class Minesweeper : MonoBehaviour
             {
                 for (int j = 0; j < col; j++)
                 {
-                    if (v[i, j].GetComponent<CellData>().isBomb)
+                    if (v[i, j].GetComponent<CellData>().isBomb && v[i, j] != null)
                     {
                         v[i, j].GetComponent<Renderer>().material = Flag;
                     }
                 }
             }
+            DestroyCells(); //do this after pressing button to send back to menu
+
+            canvas.SetActive(true);
             // Update Smiley face to have sunglasses 8)
         }
 
+    }
+
+    void DestroyCells()
+    {
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < col; j++)
+            {
+                if (v[i, j].GetComponent<CellData>().isBomb && v[i, j] != null)
+                {
+                    v[i, j].GetComponent<Renderer>().material = Flag;
+                }
+                if (v[i, j] != null)
+                {
+                    Destroy(v[i, j]);
+                }
+            }
+        }
     }
 
     void RevealRec(int x, int y)
@@ -223,11 +247,8 @@ public class Minesweeper : MonoBehaviour
         {
             return; // Base case: cell is bomb or flagged
         }
-
-        if (!v[x, y].GetComponent<CellData>().revealed)
-        {
-            Reveal(x, y);
-        }
+       
+        Reveal(x, y);
 
         if (v[x, y].GetComponent<CellData>().cellVal == 0)
         {
@@ -281,7 +302,7 @@ public class Minesweeper : MonoBehaviour
                 cv.GetComponent<Renderer>().material = tile8;
                 break;
             default:
-                cv.GetComponent <Renderer>().material = cellMaterial;
+                cv.GetComponent<Renderer>().material = cellMaterial;
                 break;
         }
 
