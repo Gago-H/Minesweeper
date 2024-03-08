@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
-using static Minesweeper;
 
 public class UIManager : MonoBehaviour
 {
@@ -46,18 +45,39 @@ public class UIManager : MonoBehaviour
                 resetButton.SetActive(true);
                 break;
             case 3:
-                int d = string.IsNullOrEmpty(userInput.text) ? 9 : Convert.ToInt32(userInput.text);
-                int d2 = string.IsNullOrEmpty(userInput2.text) ? 9 : Convert.ToInt32(userInput2.text);
-                int mc = string.IsNullOrEmpty(userInput3.text) ? 10 : Convert.ToInt32(userInput3.text);
+                int rowInput = string.IsNullOrEmpty(userInput.text) ? 9 : Convert.ToInt32(userInput.text);
+                int colInput = string.IsNullOrEmpty(userInput2.text) ? 9 : Convert.ToInt32(userInput2.text);
+                int mineCount = string.IsNullOrEmpty(userInput3.text) ? 10 : Convert.ToInt32(userInput3.text);
+                int bigger, smaller;
 
-                OnChangeGridSize?.Invoke(d2, d, mc);
+                if (colInput >= rowInput)
+                {
+                    bigger = colInput;
+                    smaller = rowInput;
+                    if (bigger < 8 && smaller < 8)
+                    {
+                        bigger = 8;
+                    }
+                }
+                else
+                {
+                    smaller = colInput;
+                    bigger = rowInput;
+                    if (bigger < 8 && smaller < 8)
+                    {
+                        bigger = 8;
+                    }
+                }
+
+                OnChangeGridSize?.Invoke(bigger, smaller, mineCount);
                 Hide();
-                AdjustCameraView(d, d2);
+                AdjustCameraView(smaller, bigger);
                 resetButton.SetActive(true);
                 break;
             case 4:
                 resetButton.SetActive(false);
                 UI.SetActive(true);
+                OnChangeGridSize?.Invoke(0, 0, -1);
                 break;
         }
 
@@ -65,12 +85,6 @@ public class UIManager : MonoBehaviour
 
     private void AdjustCameraView(int columns, int rows)
     {
-        //int big;
-        //if (rows >= columns)
-        //{
-        //    big = rows;
-        //}
-        //else big = columns;
         camera.transform.position = new Vector3((float)rows/2 - 0.5f, ((float)rows + (float)columns)/2, (float)columns/2 - 0.5f); 
     }
 }

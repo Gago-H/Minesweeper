@@ -12,7 +12,7 @@ public class CellData : MonoBehaviour
     public Vector2Int pos;
 
     public bool revealed;
-    public static int selectedAmount;
+    //public static int selectedAmount;
     public bool flagged;
     public bool exploded;
     public bool notHere;

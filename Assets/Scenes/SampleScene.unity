@@ -191,7 +191,7 @@ MonoBehaviour:
   lost: 0
   won: 0
   GameStart: 0
-  selAm: 0
+  firstClick: 1
   notHereCount: 0
   cellNum: 0
 --- !u!4 &36377814
@@ -1166,7 +1166,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Reset
+  m_text: Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c1510690be8b5eb47afdff8904684ea8, type: 2}
   m_sharedMaterial: {fileID: 6966329863329374380, guid: c1510690be8b5eb47afdff8904684ea8, type: 2}
@@ -2327,7 +2327,7 @@ GameObject:
   - component: {fileID: 1176417519}
   - component: {fileID: 1176417522}
   m_Layer: 5
-  m_Name: Reset
+  m_Name: Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2350,7 +2350,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -892.5, y: 472.5}
+  m_AnchoredPosition: {x: -893.8, y: 473.8}
   m_SizeDelta: {x: 135, y: 135}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1176417519

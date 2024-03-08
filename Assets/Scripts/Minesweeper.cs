@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
-
 public class Minesweeper : MonoBehaviour
 {
     public Material cellMaterial;
@@ -29,15 +28,13 @@ public class Minesweeper : MonoBehaviour
     public static int row;
     public static int col;
 
-    public bool lost = false;
-    public bool won = false;
     public bool GameStart = false;
 
     static int count;
     static int bombCount;
     int nonBombCount;
 
-    public int selAm = CellData.selectedAmount;
+    public bool firstClick = true;
     public int notHereCount = 0;
     public int cellNum = 0;
 
@@ -48,14 +45,24 @@ public class Minesweeper : MonoBehaviour
 
     private void UIManager_OnChangeGridSize(int m, int n, int bc)
     {
+        Debug.Log($"Bombcount sent from UIManager: {bc}");
+        if (bc == -1)
+        {
+            DestroyCells();
+            GameStart = false;
+            firstClick = true;
+            return;
+        }
+
         row = m;
         col = n;
         count = row * col;
         bombCount = bc;
         nonBombCount = count - bombCount;
+
         v = new GameObject[m, n];
         CreateBoard(m, n);
-        Debug.Log($"{bombCount}");
+        Debug.Log($"Bombcount after {bombCount}");
         PlaceBomb(bc);
     }
 
@@ -66,7 +73,7 @@ public class Minesweeper : MonoBehaviour
 
     RaycastHit tmphitHighlight;
 
-   
+
 
 
     // Start is called before the first frame update
@@ -80,7 +87,6 @@ public class Minesweeper : MonoBehaviour
     void Update()
     {
         if (!GameStart) return;
-        if (won) return;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -94,7 +100,7 @@ public class Minesweeper : MonoBehaviour
         }
 
         // PSEUDO RANDOM BOMB PLACEMENT ON FIRST CLICK + FIRST CLICK CANNOT BE BOMB
-        if (selAm == 0 && Input.GetMouseButtonUp(0))
+        if (firstClick && Input.GetMouseButtonUp(0))
         {
             if (Physics.Raycast(ray, out tmphitHighlight, 100))
             {
@@ -102,7 +108,7 @@ public class Minesweeper : MonoBehaviour
                 int y = tmphitHighlight.transform.GetComponent<CellData>().pos.y;
 
                 //v[x, y].transform.GetComponent<CellData>().first = true;
-                
+
                 ReplaceBombs(x, y, bombCount);
                 PlaceCellValues();
 
@@ -112,19 +118,19 @@ public class Minesweeper : MonoBehaviour
                 // max reveal a center area 3x3 without any being bombs
                 // this is assuming none of the cells within the areas mentioned have cellVal == 0
                 RevealRec(x, y);
-                selAm = 1;
+                firstClick = false;
 
                 for (int i = 0; i < row; i++)
                 {
                     for (int j = 0; j < col; j++)
                     {
-                        Debug.Log($"Cell: {v[i, j]}, Cell value: {v[i, j].transform.GetComponent<CellData>().cellVal}");
+                        //Debug.Log($"Cell: {v[i, j]}, Cell value: {v[i, j].transform.GetComponent<CellData>().cellVal}");
                     }
                 }
             }
         }// END OF FIRST CLICK
 
-        if (selAm != 0 && Input.GetMouseButtonUp(0) && !lost && !won)
+        if (!firstClick && Input.GetMouseButtonUp(0))
         {
             if (Physics.Raycast(ray, out tmphitHighlight, 100))
             {
@@ -134,7 +140,7 @@ public class Minesweeper : MonoBehaviour
                 var cd = v[x, y].transform.GetComponent<CellData>();
 
 
-                Debug.Log($"Cell value: {cd.cellVal} IsBomb: {cd.isBomb} Revealed: {cd.revealed} Flagged: {cd.flagged} Exploded: {cd.exploded}");
+                //Debug.Log($"Cell value: {cd.cellVal} IsBomb: {cd.isBomb} Revealed: {cd.revealed} Flagged: {cd.flagged} Exploded: {cd.exploded}");
 
                 if (!cd.flagged)
                 {
@@ -149,7 +155,7 @@ public class Minesweeper : MonoBehaviour
                         v[x, y].GetComponent<CellData>().exploded = true;
 
                         // BOOL VALUE TO DEACTIVE ANY FURTHER CLICKS
-                        lost = true;
+                        GameStart = false;
 
                         for (int i = 0; i < row; i++)
                         {
@@ -167,17 +173,17 @@ public class Minesweeper : MonoBehaviour
             }
         }
 
-        if (selAm != 0 && Input.GetMouseButtonUp(1) && !lost && !won)
+        if (!firstClick && Input.GetMouseButtonUp(1))
         {
             if (Physics.Raycast(ray, out tmphitHighlight, 100))
             {
                 int x = tmphitHighlight.transform.GetComponent<CellData>().pos.x;
                 int y = tmphitHighlight.transform.GetComponent<CellData>().pos.y;
 
-                Debug.Log($"pos: {x},{y}");
+                //Debug.Log($"pos: {x},{y}");
 
                 var cd = v[x, y].transform.GetComponent<CellData>();
-                
+
                 if (!cd.revealed)
                 {
                     if (!cd.flagged)
@@ -199,7 +205,7 @@ public class Minesweeper : MonoBehaviour
         if (nonBombCount == 0)
         {
             //Debug.Log($"You win!");
-            won = true;
+            GameStart = false;
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < col; j++)
@@ -210,9 +216,6 @@ public class Minesweeper : MonoBehaviour
                     }
                 }
             }
-            DestroyCells(); //do this after pressing button to send back to menu
-
-            canvas.SetActive(true);
             // Update Smiley face to have sunglasses 8)
         }
 
@@ -224,10 +227,6 @@ public class Minesweeper : MonoBehaviour
         {
             for (int j = 0; j < col; j++)
             {
-                if (v[i, j].GetComponent<CellData>().isBomb && v[i, j] != null)
-                {
-                    v[i, j].GetComponent<Renderer>().material = Flag;
-                }
                 if (v[i, j] != null)
                 {
                     Destroy(v[i, j]);
@@ -247,7 +246,7 @@ public class Minesweeper : MonoBehaviour
         {
             return; // Base case: cell is bomb or flagged
         }
-       
+
         Reveal(x, y);
 
         if (v[x, y].GetComponent<CellData>().cellVal == 0)
@@ -311,6 +310,7 @@ public class Minesweeper : MonoBehaviour
         go.transform.GetComponent<Renderer>().material.color = Color.gray;
         cv.revealed = true;
         nonBombCount--;
+        Debug.Log($"Cell: {v[x, y]}, revealed this cell; NBC: {nonBombCount}");
     }
 
     void CreateBoard(int r, int c)
@@ -358,7 +358,7 @@ public class Minesweeper : MonoBehaviour
                 bombCount--;
                 Debug.Log($"We set a bomb {b.transform.name}, Cell value: {bd.cellVal}");
             }
-            //else if (!bd.isBomb && notHereCount == bombCount && bd.notHere)
+            //else if (!bd.isBomb && notHereCount == bombCount && nonBombCount == 0 && bd.notHere)
             //{
             //    bd.isBomb = true;
             //    bd.cellVal = -1;
@@ -409,11 +409,7 @@ public class Minesweeper : MonoBehaviour
 
     void ReplaceBombs(int x, int y, int bc)
     {
-        v[x, y].GetComponent<CellData>().cellVal = 0;
-        v[x, y].GetComponent<CellData>().notHere = true;
-        v[x, y].GetComponent<CellData>().isBomb = false;
-        notHereCount++;
-
+        Debug.Log($"row: {x}, col: {y}, bombcount: {bc}");
         for (int i = x - 1; i <= x + 1; i++)
         {
             for (int j = y - 1; j <= y + 1; j++)
@@ -425,7 +421,7 @@ public class Minesweeper : MonoBehaviour
                         bc++;
                         v[i, j].GetComponent<CellData>().isBomb = false;
                         v[i, j].GetComponent<CellData>().cellVal = 0;
-                        Debug.Log($"I took out a bomb!");
+                        Debug.Log($"I took out a bomb! {v[i, j]}");
                     }
 
                     v[i, j].GetComponent<CellData>().notHere = true;
@@ -433,7 +429,24 @@ public class Minesweeper : MonoBehaviour
                 }
             }
         }
+        
+        //while(bc > 0 && nonBombCount < notHereCount)
+        //{
+        //    int a = Random.Range(x - 1, x + 1);
+        //    int b = Random.Range(y - 1, y + 1);
 
+        //    if(a >= 0 && a < row && b >= 0 && b < col && v[a, b].GetComponent<CellData>().notHere && !(a == x && b == y))
+        //    {
+        //        v[a, b].GetComponent<CellData>().notHere = false;
+        //        notHereCount--;
+        //    }
+        //}
+
+        //if (bc == count - 1)
+        //{
+        //    v[x, y].GetComponent<CellData>().notHere = false; // MAKE SURE TO CHECK 3x3 with 8 BOMBS CASE
+        //}
+        Debug.Log($"notherecount: {notHereCount}");
         PlaceBomb(bc);
     }
 }
