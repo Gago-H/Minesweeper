@@ -1,4 +1,4 @@
-The game is now downloadable to play! Feel free to clone this and find the executable under Builds/Windows/Minesweeper_.exe.
+Need to change gitignore settings to include the build.
 
 Notes:
 
