@@ -9,6 +9,7 @@ public class Minesweeper : MonoBehaviour
 
     public GameObject canvas;
     public GameObject reset;
+    public GameObject Exit;
     public GameObject Win;
     public GameObject Lose;
 
@@ -48,7 +49,7 @@ public class Minesweeper : MonoBehaviour
     private void UIManager_OnChangeGridSize(int m, int n, int bc)
     {
         //Debug.Log($"Bombcount sent from UIManager: {bc}");
-        if (bc == 0 && m == 0 && n == 0)
+        if (bc == -1)
         {
             DestroyCells();
             notHereCount = 0;

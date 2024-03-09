@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     public GameObject winText;
     public GameObject loseText;
     public GameObject resetButton;
+    public GameObject exitButton;
+
     public new Camera camera;
     private void Hide()
     {
@@ -104,10 +106,21 @@ public class UIManager : MonoBehaviour
                 winText.SetActive(false);
                 loseText.SetActive(false);
                 UI.SetActive(true);
-                OnChangeGridSize?.Invoke(0, 0, 0);
+                OnChangeGridSize?.Invoke(0, 0, -1);
+                break;
+            case 5:
+                ExitGame();
                 break;
         }
 
+    }
+    private void ExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
     }
 
     private void AdjustCameraView(int columns, int rows)
