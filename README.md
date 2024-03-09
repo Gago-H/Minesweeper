@@ -1,4 +1,4 @@
-Need to change gitignore settings to include the build.
+Game is now downloadable, enjoy! (Builds/Windows/Minesweeper_.exe)
 
 Notes:
 
