@@ -10,9 +10,10 @@ public class UIManager : MonoBehaviour
     public static event ChangeGridSize OnChangeGridSize;
 
     public GameObject UI;
+    public GameObject winText;
+    public GameObject loseText;
     public GameObject resetButton;
     public new Camera camera;
-
     private void Hide()
     {
         UI.SetActive(false);
@@ -58,6 +59,18 @@ public class UIManager : MonoBehaviour
                     {
                         bigger = 8;
                     }
+                    if (bigger > 50)
+                    {
+                        bigger = 50;
+                    }
+                    if (smaller > 50)
+                    {
+                        smaller = 50;
+                    }
+                    if (mineCount > (bigger * smaller))
+                    {
+                        mineCount = (bigger * smaller) - 1;
+                    }
                 }
                 else
                 {
@@ -66,6 +79,18 @@ public class UIManager : MonoBehaviour
                     if (bigger < 8 && smaller < 8)
                     {
                         bigger = 8;
+                    }
+                    if (bigger > 50)
+                    {
+                        bigger = 50;
+                    }
+                    if (smaller > 50)
+                    {
+                        smaller = 50;
+                    }
+                    if (mineCount > (bigger * smaller))
+                    {
+                        mineCount = (bigger * smaller) - 1;
                     }
                 }
 
@@ -76,8 +101,10 @@ public class UIManager : MonoBehaviour
                 break;
             case 4:
                 resetButton.SetActive(false);
+                winText.SetActive(false);
+                loseText.SetActive(false);
                 UI.SetActive(true);
-                OnChangeGridSize?.Invoke(0, 0, -1);
+                OnChangeGridSize?.Invoke(0, 0, 0);
                 break;
         }
 
@@ -85,6 +112,8 @@ public class UIManager : MonoBehaviour
 
     private void AdjustCameraView(int columns, int rows)
     {
-        camera.transform.position = new Vector3((float)rows/2 - 0.5f, ((float)rows + (float)columns)/2, (float)columns/2 - 0.5f); 
+        camera.transform.position = new Vector3((float)rows/2 - 0.5f,
+                                               ((float)rows + (float)columns)/2 + ((float)rows * .1f),
+                                                (float)columns/2 - 0.5f); 
     }
 }

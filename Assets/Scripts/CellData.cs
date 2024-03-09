@@ -12,23 +12,8 @@ public class CellData : MonoBehaviour
     public Vector2Int pos;
 
     public bool revealed;
-    //public static int selectedAmount;
     public bool flagged;
     public bool exploded;
     public bool notHere;
-
-    //public Transform bombred;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
 }

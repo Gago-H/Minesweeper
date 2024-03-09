@@ -9,6 +9,8 @@ public class Minesweeper : MonoBehaviour
 
     public GameObject canvas;
     public GameObject reset;
+    public GameObject Win;
+    public GameObject Lose;
 
     public Material tile1;
     public Material tile2;
@@ -45,10 +47,14 @@ public class Minesweeper : MonoBehaviour
 
     private void UIManager_OnChangeGridSize(int m, int n, int bc)
     {
-        Debug.Log($"Bombcount sent from UIManager: {bc}");
-        if (bc == -1)
+        //Debug.Log($"Bombcount sent from UIManager: {bc}");
+        if (bc == 0 && m == 0 && n == 0)
         {
             DestroyCells();
+            notHereCount = 0;
+            bombCount = 0;
+            row = 0;
+            col = 0;
             GameStart = false;
             firstClick = true;
             return;
@@ -62,8 +68,13 @@ public class Minesweeper : MonoBehaviour
 
         v = new GameObject[m, n];
         CreateBoard(m, n);
-        Debug.Log($"Bombcount after {bombCount}");
+        //Debug.Log($"Bombcount after {bombCount}");
         PlaceBomb(bc);
+        Debug.Log($"GAME STARTED NotHereCount: {notHereCount}, NonBombCount: {nonBombCount}");
+
+        //Debug.Log($"THIS IS AFTER START --> NotHereCount: {notHereCount}, NonBombCount: {nonBombCount}");
+
+        GameStart = true;
     }
 
     private void OnDisable()
@@ -80,6 +91,8 @@ public class Minesweeper : MonoBehaviour
     void Start()
     {
         reset.SetActive(false);
+        Win.SetActive(false);
+        Lose.SetActive(false);
     }
 
 
@@ -109,7 +122,9 @@ public class Minesweeper : MonoBehaviour
 
                 //v[x, y].transform.GetComponent<CellData>().first = true;
 
-                ReplaceBombs(x, y, bombCount);
+                int g = ReplaceBombs(x, y, bombCount);
+                Debug.Log(g);
+                PlaceBomb(g);
                 PlaceCellValues();
 
                 // Recursively reveal an opening area upon first click then change the value,
@@ -156,7 +171,7 @@ public class Minesweeper : MonoBehaviour
 
                         // BOOL VALUE TO DEACTIVE ANY FURTHER CLICKS
                         GameStart = false;
-
+                        Lose.SetActive(true);
                         for (int i = 0; i < row; i++)
                         {
                             for (int j = 0; j < col; j++)
@@ -216,6 +231,7 @@ public class Minesweeper : MonoBehaviour
                     }
                 }
             }
+            Win.SetActive(true);
             // Update Smiley face to have sunglasses 8)
         }
 
@@ -343,31 +359,24 @@ public class Minesweeper : MonoBehaviour
     {
         bombCount = bc;
 
-        Debug.Log($"{bombCount}");
+        //Debug.Log($"Bombcount from PlaceBomb method: {bombCount}");
 
         while (bombCount > 0)
         {
-            int x = Random.Range(0, row - 1);
-            int y = Random.Range(0, col - 1);
+            int x = UnityEngine.Random.Range(0, row);
+            int y = UnityEngine.Random.Range(0, col);
             var b = v[x, y];
             var bd = v[x, y].GetComponent<CellData>();
-            if (!bd.isBomb && !bd.notHere && bombCount > 0)
+            if (!bd.isBomb && !bd.notHere)
             {
                 bd.isBomb = true;
                 bd.cellVal = -1;
                 bombCount--;
                 Debug.Log($"We set a bomb {b.transform.name}, Cell value: {bd.cellVal}");
             }
-            //else if (!bd.isBomb && notHereCount == bombCount && nonBombCount == 0 && bd.notHere)
-            //{
-            //    bd.isBomb = true;
-            //    bd.cellVal = -1;
-            //    bombCount--;
-            //    notHereCount--;
-            //    Debug.Log($"We set a bomb {b.transform.name}, Cell value: {bd.cellVal}");
-            //}
         }
-        GameStart = true;
+        //Debug.Log($"Bombcount from PlaceBomb method after setting all bombs: {bombCount}");
+
     }
 
     void PlaceCellValues()
@@ -407,14 +416,14 @@ public class Minesweeper : MonoBehaviour
         }
     }
 
-    void ReplaceBombs(int x, int y, int bc)
+    int ReplaceBombs(int x, int y, int bc)
     {
-        Debug.Log($"row: {x}, col: {y}, bombcount: {bc}");
+        //Debug.Log($"row: {x}, col: {y}, bombcount: {bc}");
         for (int i = x - 1; i <= x + 1; i++)
         {
             for (int j = y - 1; j <= y + 1; j++)
             {
-                if (i >= 0 && i < row && j >= 0 && j < col && i <= x + 1 && j <= y + 1)
+                if (i >= 0 && i < row && j >= 0 && j < col)
                 {
                     if (v[i, j].GetComponent<CellData>().isBomb)
                     {
@@ -429,24 +438,37 @@ public class Minesweeper : MonoBehaviour
                 }
             }
         }
-        
-        //while(bc > 0 && nonBombCount < notHereCount)
-        //{
-        //    int a = Random.Range(x - 1, x + 1);
-        //    int b = Random.Range(y - 1, y + 1);
 
-        //    if(a >= 0 && a < row && b >= 0 && b < col && v[a, b].GetComponent<CellData>().notHere && !(a == x && b == y))
+        //if (nonBombCount < notHereCount)
+        //{
+        //    for (int i = 0; i < row; i++)
         //    {
-        //        v[a, b].GetComponent<CellData>().notHere = false;
-        //        notHereCount--;
+        //        for (int j = 0; j < col; j++)
+        //        {
+        //            if (!(i == x && j == y))
+        //            {
+        //                v[i, j].GetComponent<CellData>().notHere = false;
+        //                notHereCount--;
+        //            }
+        //        }
         //    }
         //}
+        Debug.Log($"BEFORE WHILE NotHereCount: {notHereCount}, NonBombCount: {nonBombCount}");
 
-        //if (bc == count - 1)
-        //{
-        //    v[x, y].GetComponent<CellData>().notHere = false; // MAKE SURE TO CHECK 3x3 with 8 BOMBS CASE
-        //}
-        Debug.Log($"notherecount: {notHereCount}");
-        PlaceBomb(bc);
+        while (nonBombCount < notHereCount)
+        {
+            int a = Random.Range(x - 1, x + 2);
+            int b = Random.Range(y - 1, y + 2);
+
+            if (a >= 0 && a < row && b >= 0 && b < col && v[a, b].GetComponent<CellData>().notHere && !(a == x && b == y))
+            {
+                v[a, b].GetComponent<CellData>().notHere = false;
+                notHereCount--;
+            }
+        }
+
+        Debug.Log($"AFTER WHILE Notherecount: {notHereCount}, Nonbombcount: {nonBombCount}");
+        //PlaceBomb(bc);
+        return bc;
     }
 }
