@@ -5,6 +5,8 @@ Game is now downloadable, enjoy!
 3. Once done, go to Builds/Windows/Minesweeper_.exe
 4. Open Minesweeper_.exe and enjoy
 
+Size on disk <400MB
+
 Notes:
 
 For now, the game's menu UI will look as intended only for 1920x1080 resolution.
