@@ -73,6 +73,10 @@ public class UIManager : MonoBehaviour
                     {
                         mineCount = (bigger * smaller) - 1;
                     }
+                    if (mineCount < 0)
+                    {
+                        mineCount = 0;
+                    }
                 }
                 else
                 {
@@ -93,6 +97,10 @@ public class UIManager : MonoBehaviour
                     if (mineCount > (bigger * smaller))
                     {
                         mineCount = (bigger * smaller) - 1;
+                    }
+                    if (mineCount < 0)
+                    {
+                        mineCount = 0;
                     }
                 }
 
