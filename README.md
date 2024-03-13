@@ -2,8 +2,9 @@ Game is now downloadable, enjoy!
 
 1. On the repo page, click on releases on the right hand side
 2. Download Minesweeper.zip
-3. Once done, go to Builds/Windows/Minesweeper_.exe
-4. Open Minesweeper_.exe and enjoy
+3. Unzip it anywhere you want
+4. Once done, go to Minesweeper/Builds/Windows/Minesweeper_.exe
+5. Open Minesweeper_.exe and enjoy
 
 Size on disk <400MB
 
